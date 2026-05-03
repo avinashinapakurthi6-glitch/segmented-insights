@@ -421,11 +421,36 @@ const Index = () => {
           </button>
         </header>
 
+        {/* KPI controls */}
+        <div className="flex items-center gap-3 mb-3 flex-wrap">
+          <span className="text-xs" style={{ color: "#666" }}>KPI format</span>
+          <label className="flex items-center gap-1 text-xs" style={{ color: "#111" }}>
+            Decimals
+            <select
+              value={kpiDecimals}
+              onChange={(e) => setKpiDecimals(parseInt(e.target.value))}
+              style={{ border: "0.5px solid #e5e5e5", borderRadius: 8, padding: "2px 6px" }}
+            >
+              {[0, 1, 2, 3, 4].map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
+          </label>
+          <div className="flex text-xs" style={{ border: "0.5px solid #e5e5e5", borderRadius: 8, overflow: "hidden" }}>
+            <button
+              onClick={() => setKpiCompact(false)}
+              style={{ padding: "2px 8px", background: !kpiCompact ? "#111" : "#fff", color: !kpiCompact ? "#fff" : "#111" }}
+            >Full</button>
+            <button
+              onClick={() => setKpiCompact(true)}
+              style={{ padding: "2px 8px", background: kpiCompact ? "#111" : "#fff", color: kpiCompact ? "#fff" : "#111" }}
+            >Compact</button>
+          </div>
+        </div>
+
         {/* KPI row */}
         <div className="grid gap-3 mb-4" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}>
           <Card>
             <p className="text-xs" style={{ color: "#666" }}>Records</p>
-            <p className="text-xl font-semibold" style={{ color: "#111" }}>{rows.length.toLocaleString()}</p>
+            <p className="text-xl font-semibold" style={{ color: "#111" }}>{fmtKpi(rows.length)}</p>
           </Card>
           <Card>
             <p className="text-xs" style={{ color: "#666" }}>Segments</p>
@@ -433,7 +458,9 @@ const Index = () => {
           </Card>
           <Card>
             <p className="text-xs" style={{ color: "#666" }}>Separation</p>
-            <p className="text-xl font-semibold" style={{ color: "#111" }}>{result.separation.toFixed(2)}</p>
+            <p className="text-xl font-semibold" style={{ color: "#111" }}>
+              {result.separation.toLocaleString(undefined, { maximumFractionDigits: kpiDecimals, minimumFractionDigits: kpiDecimals })}
+            </p>
           </Card>
           {result.features.slice(0, 4).map((f) => {
             const vals = rows.map((r) => num(r[f])).filter((v) => !isNaN(v));
@@ -441,9 +468,7 @@ const Index = () => {
             return (
               <Card key={f}>
                 <p className="text-xs truncate" style={{ color: "#666" }}>Avg {f}</p>
-                <p className="text-xl font-semibold" style={{ color: "#111" }}>
-                  {mean.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                </p>
+                <p className="text-xl font-semibold" style={{ color: "#111" }}>{fmtKpi(mean)}</p>
               </Card>
             );
           })}

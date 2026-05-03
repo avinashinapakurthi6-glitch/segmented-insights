@@ -106,7 +106,16 @@ const Index = () => {
   const [yAxis, setYAxis] = useState("");
   const [trendMetric, setTrendMetric] = useState("");
   const [fileName, setFileName] = useState("");
+  const [kpiDecimals, setKpiDecimals] = useState(2);
+  const [kpiCompact, setKpiCompact] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const fmtKpi = (n: number) =>
+    n.toLocaleString(undefined, {
+      notation: kpiCompact ? "compact" : "standard",
+      maximumFractionDigits: kpiDecimals,
+      minimumFractionDigits: kpiCompact ? 0 : kpiDecimals,
+    });
 
   const handleFile = async (file: File) => {
     setFileName(file.name);
